@@ -1,0 +1,17 @@
+#!/bin/bash
+########################################
+# example: python plot_data.py -b -p figure_dir -o metar -o synop -o ship -o buoy -v dew_point -v temperature -v speed -s 17050609 -e 17050710 -w 3 -m nz4kmN_d2 --id
+# NZ is 12 hours ahead of UTC, so -15 means 3 hours delay
+########################################
+
+cur_dt=$(date +"%Y%m%d%H0000")
+valid_dt1=$(date -d "-16 hours" +"%y%m%d%H")
+valid_dt2=$(date -d "-15 hours" +"%y%m%d%H")
+
+echo $valid_dt1
+echo $valid_dt2
+source activate obs2aws-dev
+
+python /home/szhang/GitHub_branches/plot_obs/plot_little_r_ddb/plot_data.py -b -p /home/szhang/Programs/cronjobs/ddb_realtime -o metar -o synop -o ship -o buoy -v dew_point -v temperature -v speed -s $valid_dt1 -e $valid_dt2 -w 1 -m nz4kmN_d2 --id
+
+echo 'done' 

@@ -1,4 +1,6 @@
 import traceback
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.colors as mc
 from pycast.wrf_basemap_params import WRF_BASEMAP_PARAMS
 from OBS2r import little_r
