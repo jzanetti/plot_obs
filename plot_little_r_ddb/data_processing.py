@@ -47,7 +47,7 @@ def little_r_plot(options):
         for c_observation_type in options.observation_type:
             cdatetime_str = cdatetime.strftime('%y%m%d%H')
             cdatetime_str1 = (cdatetime + datetime.timedelta(seconds=options.interval*3599)).strftime('%y%m%d%H')
-            data, (first_datetime2, last_datetime2) = little_r.extract(options.little_r_file, cdatetime_str,cdatetime_str1, bmap=BASEMAP)
+            data, (first_datetime2, last_datetime2) = little_r.extract(options.little_r_file, c_observation_type, cdatetime_str,cdatetime_str1, bmap=BASEMAP)
             data_plot(BASEMAP,c_observation_type,options,data,cdatetime,cdatetime + datetime.timedelta(seconds=options.interval*3599))
         cdatetime = cdatetime + datetime.timedelta(seconds=options.interval*3600)
 

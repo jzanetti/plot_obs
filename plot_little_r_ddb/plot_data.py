@@ -66,19 +66,24 @@ if __name__ == '__main__':
     
     (options, args)  = parser.parse_args(['-l','-f','/home/szhang/workspace/obs2r_debug/all.little_r',\
                                           '-p','/home/szhang/workspace/plot_little_r_ddb/figure_little_r',\
-                                          '-o','synop' ,\
+                                          '-o','synop' , '-o', 'metar', \
                                           '-v','temperature', \
-                                          '-s', '17042823', '-e', '17050201', '-w', '1',\
-                                          '-m' 'nz4kmN_d2'])
+                                          '-s', '17042823', '-e', '17042901', '-w', '1',\
+                                          '-m' 'nz4kmN_d2','--id'])
     #(options, args) = parser.parse_args(['-b','-p','/home/szhang/workspace/plot_little_r_ddb/figure2', \
     #                                     '-o','metar','-o','synop','-o', 'ship','-o','buoy',\
     #                                     '-v','dew_point', '-v','temperature', '-v', 'speed',\
     #                                     '-s', '17050609', '-e', '17050710', '-w', '3',\
     #                                     '-m' 'nz4kmN_d2','--id'])
+    
+    #(options, args) = parser.parse_args()
     if options.little_r == True:
         data_processing.little_r_plot(options)
     elif options.ddb == True:
         data_processing.ddb_plot(options)
+    else:
+        print '** For little_r plot: python plot_data.py -l -f all.little_r -p figure_dir -o synop -o metar -v temperature -s 17042823 -e 17050201 -w 1 -m nz4kmN_d2 --id'
+        print '** For ddb plot:      python plot_data.py -b -p figure_dir -o metar -o synop -o ship -o buoy -v dew_point -v temperature -v speed -s 17050609 -e 17050710 -w 3 -m nz4kmN_d2 --id'
     
     print 'done'
 
