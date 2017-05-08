@@ -8,6 +8,19 @@ import datetime
 import copy
 from AMPSAws import utils, connections
 import os
+import numpy
+
+def return_req_data(data,r_obstype):
+    req_i = []
+    for i in range(len(data['id'])):
+        if r_obstype in data['id'][i]:
+            req_i.append(i)
+    
+    req_data = {}
+    for ckey in data.keys():
+        req_data[ckey] = numpy.asarray([data[ckey][j] for j in req_i], dtype=data[ckey].dtype)
+            
+    return req_data
 
 def get_client_retry():
     """ Indefinitely try to get an Amazon client. """
@@ -47,7 +60,8 @@ def little_r_plot(options):
         for c_observation_type in options.observation_type:
             cdatetime_str = cdatetime.strftime('%y%m%d%H')
             cdatetime_str1 = (cdatetime + datetime.timedelta(seconds=options.interval*3599)).strftime('%y%m%d%H')
-            data, (first_datetime2, last_datetime2) = little_r.extract(options.little_r_file, c_observation_type, cdatetime_str,cdatetime_str1, bmap=BASEMAP)
+            data, (first_datetime2, last_datetime2) = little_r.extract(options.little_r_file, cdatetime_str,cdatetime_str1, bmap=BASEMAP)
+            data = return_req_data(data,c_observation_type)
             data_plot(BASEMAP,c_observation_type,options,data,cdatetime,cdatetime + datetime.timedelta(seconds=options.interval*3599))
         cdatetime = cdatetime + datetime.timedelta(seconds=options.interval*3600)
 

@@ -64,19 +64,19 @@ if __name__ == '__main__':
     parser.add_option('--interactive', dest='interactive', action="store_true",
                       help="show plots in interactive windows")
     
-    (options, args)  = parser.parse_args(['-l','-f','/home/szhang/workspace/obs2r_debug/all.little_r',\
-                                          '-p','/home/szhang/workspace/plot_little_r_ddb/figure_little_r',\
-                                          '-o','synop' , '-o', 'metar', \
-                                          '-v','temperature', \
-                                          '-s', '17042823', '-e', '17042901', '-w', '1',\
-                                          '-m' 'nz4kmN_d2','--id'])
+    #(options, args)  = parser.parse_args(['-l','-f','/home/szhang/workspace/obs2r_debug/all.little_r',\
+    #                                      '-p','/home/szhang/workspace/plot_little_r_ddb/figure_little_r',\
+    #                                      '-o','synop' , '-o', 'metar', \
+    #                                      '-v','temperature', \
+    #                                      '-s', '17042823', '-e', '17042901', '-w', '1',\
+    #                                      '-m' 'nz4kmN_d2','--id'])
     #(options, args) = parser.parse_args(['-b','-p','/home/szhang/workspace/plot_little_r_ddb/figure2', \
     #                                     '-o','metar','-o','synop','-o', 'ship','-o','buoy',\
     #                                     '-v','dew_point', '-v','temperature', '-v', 'speed',\
     #                                     '-s', '17050609', '-e', '17050710', '-w', '3',\
     #                                     '-m' 'nz4kmN_d2','--id'])
     
-    #(options, args) = parser.parse_args()
+    (options, args) = parser.parse_args()
     if options.little_r == True:
         data_processing.little_r_plot(options)
     elif options.ddb == True:
