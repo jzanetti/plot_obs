@@ -33,6 +33,21 @@ def get_ddb_row(client,obs_type,valid_from,valid_to,north,south,west,east):
     for ddbrow in ddbrow_list:
         ddbrow = s3_download.row_postprocess(ddbrow)
         ddbrow_keys = [str(r) for r in ddbrow.keys()]
+        
+        if float(ddbrow['longitude']) < 0:
+            b = 180.0 + (180.0 + float(ddbrow['longitude']))
+        else:
+            b = float(ddbrow['longitude'])
+        if east < 0:
+            east_b = 180.0 + (180.0 + east)
+        else:
+            east_b = east
+        
+        
+        if (float(ddbrow['latitude']) > north) or (float(ddbrow['latitude']) < south) \
+            or (b > east_b) or (b < west):
+            continue
+        
         for ddb_var, req_key in ddb_var_table:
             if (ddb_var.upper() in map(str.upper, ddbrow_keys)) == False:
                 ddb_row_out[req_key].append(-888888.0)
@@ -41,7 +56,7 @@ def get_ddb_row(client,obs_type,valid_from,valid_to,north,south,west,east):
                     if ckey.upper() == ddb_var.upper():
                         ddb_row_out[req_key].append(float(ddbrow[ckey]))
                 
-                                        
+        ddb_row_out['id'].append(str(ddbrow['obs_id']))                               
         ddb_row_out['latitude'].append(float(ddbrow['latitude']))
         ddb_row_out['longitude'].append(float(ddbrow['longitude']))
     

@@ -38,9 +38,18 @@ def set_basemap(map_key, resolution=None):
 
 def little_r_plot(options):
     BASEMAP, _ = set_basemap(options.map, 'c')
-    data, (first_datetime, last_datetime) = little_r.extract(options.little_r_file, options.start,options.end, bmap=BASEMAP)
-    data_plot(BASEMAP,options,data,first_datetime,last_datetime)
-    #data = ddb_process.get_ddb_row(data,options.start, options.end, -50.0, -40.0, 170.0, 185.0)
+    first_datetime = datetime.datetime.strptime(options.start, "%y%m%d%H")
+    last_datetime = datetime.datetime.strptime(options.end, "%y%m%d%H")
+    
+    cdatetime = first_datetime
+    while cdatetime < last_datetime:
+        print cdatetime
+        for c_observation_type in options.observation_type:
+            cdatetime_str = cdatetime.strftime('%y%m%d%H')
+            cdatetime_str1 = (cdatetime + datetime.timedelta(seconds=options.interval*3599)).strftime('%y%m%d%H')
+            data, (first_datetime2, last_datetime2) = little_r.extract(options.little_r_file, cdatetime_str,cdatetime_str1, bmap=BASEMAP)
+            data_plot(BASEMAP,c_observation_type,options,data,cdatetime,cdatetime + datetime.timedelta(seconds=options.interval*3599))
+        cdatetime = cdatetime + datetime.timedelta(seconds=options.interval*3600)
 
 def ddb_plot(options):
     BASEMAP, params = set_basemap(options.map, 'c')
@@ -52,13 +61,14 @@ def ddb_plot(options):
     cdatetime = first_datetime
     while cdatetime < last_datetime:
         print cdatetime
-        cdatetime_str = cdatetime.strftime('%y%m%d%H')
-        cdatetime_str1 = (cdatetime + datetime.timedelta(seconds=3599)).strftime('%y%m%d%H')
-        data = ddb_process.get_ddb_row(client, options.observation_type ,cdatetime_str, cdatetime_str1, params.urcrnrlat, params.llcrnrlat, params.llcrnrlon, params.urcrnrlon)
-        data_plot(BASEMAP,options,data,cdatetime,cdatetime + datetime.timedelta(seconds=3599))
-        cdatetime = cdatetime + datetime.timedelta(seconds=3600)
+        for c_observation_type in options.observation_type:
+            cdatetime_str = cdatetime.strftime('%y%m%d%H')
+            cdatetime_str1 = (cdatetime + datetime.timedelta(seconds=options.interval*3599)).strftime('%y%m%d%H')
+            data = ddb_process.get_ddb_row(client, [c_observation_type] ,cdatetime_str, cdatetime_str1, params.urcrnrlat, params.llcrnrlat, params.llcrnrlon, params.urcrnrlon)
+            data_plot(BASEMAP,c_observation_type, options,data,cdatetime,cdatetime + datetime.timedelta(seconds=options.interval*3599))
+        cdatetime = cdatetime + datetime.timedelta(seconds=options.interval*3600)
 
-def data_plot(BASEMAP,options,data,first_datetime,last_datetime):
+def data_plot(BASEMAP,c_observation_type, options,data,first_datetime,last_datetime):
     fignum = 1
     if options.do_quivers or options.do_barbs:
         wind_wanted = nonzero(
@@ -88,7 +98,7 @@ def data_plot(BASEMAP,options,data,first_datetime,last_datetime):
     plots_to_show = False
     
     for var in options.variables:
-        figure(fignum)
+        figure(fignum,figsize=(15,15))
         if not options.no_scatter:
             if len(data) > 0:
                 wanted = nonzero(data[var] > little_r.LittleRReport.missing)[0]
@@ -106,7 +116,7 @@ def data_plot(BASEMAP,options,data,first_datetime,last_datetime):
                 wanted = []
                 
             try:
-                scatter_plot = BASEMAP.scatter(x, y, c=z, edgecolor=None)
+                scatter_plot = BASEMAP.scatter(x, y, c=z, cmap=cm.jet, edgecolor=None)
                 cb = colorbar(scatter_plot)
             except:
                 traceback.print_exc()
@@ -139,19 +149,24 @@ def data_plot(BASEMAP,options,data,first_datetime,last_datetime):
             if options.do_barbs:
                 cb = colorbar(barb_plot, ticks=range(0, 51, 5))
         
+        if var == 'dew_point' or var == 'temperature':
+            clim(265,290)
+        elif var == 'speed':
+            clim(0,25.0)
+        
         BASEMAP.drawcoastlines()  # draw coastlines
         BASEMAP.drawparallels(arange(-80., 80, 20), labels=[1, 0, 0, 0])
         BASEMAP.drawmeridians(arange(-180, 180, 20), labels=[0, 0, 0, 1])
             
-        fig_dir = options.image_directory + '/' + var
+        fig_dir = options.image_directory + '/' + var + '/' + c_observation_type
         if os.path.exists(fig_dir) == False:
             os.makedirs(fig_dir)
             
-        title('%s: %s - %s' % (var, first_datetime, last_datetime))
-        figtext(0.5, 0.02, '%d valid %s obs.' % (len(wanted), var),
-                        verticalalignment='bottom', horizontalalignment='center')
-        savefig(fig_dir + '/' + '%s_%s_%s.png' % (var,first_datetime.strftime('%Y%m%dT%H%M'),last_datetime.strftime('%Y%m%dT%H%M')), dpi=options.dpi)
-        clf()
+        title('%s, %s (%s): %s - %s' % (var, c_observation_type, str(len(wanted)), first_datetime, last_datetime))
+        #figtext(0.5, 0.02, '%d valid %s obs.' % (len(wanted), var),
+        #                verticalalignment='bottom', horizontalalignment='center')
+        savefig(fig_dir + '/' + '%s_%s_%s.png' % (var,first_datetime.strftime('%Y%m%dT%H%M'),last_datetime.strftime('%Y%m%dT%H%M')),bbox_inches='tight',)
+        close()
         plots_to_show = False
     
     if plots_to_show:
