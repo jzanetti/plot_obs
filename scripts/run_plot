@@ -12,6 +12,6 @@ echo $valid_dt1
 echo $valid_dt2
 source activate obs2aws-dev
 
-python /home/szhang/GitHub_branches/plot_obs/plot_little_r_ddb/plot_data.py -b -p /home/szhang/Programs/cronjobs/ddb_realtime -o metar -o synop -o ship -o buoy -v dew_point -v temperature -v speed -s $valid_dt1 -e $valid_dt2 -w 1 -m nz4kmN_d2 --id
+plot_data.py -b -p /home/szhang/Programs/cronjobs/ddb_realtime -o metar -o synop -o ship -o buoy -v dew_point -v temperature -v speed -s $valid_dt1 -e $valid_dt2 -w 1 -m nz4kmN_d2 --id
 
 echo 'done' 

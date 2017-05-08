@@ -1,7 +1,7 @@
 #!/home/szhang/Programs/anaconda2/envs/obs2aws-dev/bin/python
 
 from optparse import OptionParser
-import data_processing
+from plot_obs import data_processing
 
 """PLottong the observation distribution for little_r and dynamodb"""
 
