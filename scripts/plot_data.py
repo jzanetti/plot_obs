@@ -14,6 +14,9 @@ def base_parser():
     parser.add_option('-b', '--ddb', dest='ddb',
                         help="plot from ddb",
                         action='store_true')
+    parser.add_option('-x', '--do_the_plotting', dest='do_the_plotting',
+                        help="do_the_plotting",
+                        action='store_true')
     parser.add_option(
         "-s", "--start", type="string", dest="start",
         help="start of desired time window YYMMDDHH (compulsory)")
@@ -43,6 +46,8 @@ if __name__ == '__main__':
                         help="little_r file")
     parser.add_option('-p', '--image_directory', type=str,
                         help="image_directory")
+    parser.add_option('-z', '--data_directory', type=str,
+                        help="data_directory (dump data to pickle for time series plotting - only support the data from DDB)")
     parser.add_option(
         "--scale", type="float", dest="scale",
         help="scale argument for quiver function (default None(autoscaling))")
@@ -70,7 +75,9 @@ if __name__ == '__main__':
     #                                      '-v','temperature', \
     #                                      '-s', '17042823', '-e', '17042901', '-w', '1',\
     #                                      '-m' 'nz4kmN_d2','--id'])
-    #(options, args) = parser.parse_args(['-b','-p','/home/szhang/workspace/plot_little_r_ddb/figure2', \
+    #(options, args) = parser.parse_args(['-b',
+    #                                     '-p','/home/szhang/workspace/plot_little_r_ddb/figure2', \
+    #                                     '-z', '/home/szhang/workspace/plot_little_r_ddb/data2', \
     #                                     '-o','metar','-o','synop','-o', 'ship','-o','buoy',\
     #                                     '-v','dew_point', '-v','temperature', '-v', 'speed',\
     #                                     '-s', '17050609', '-e', '17050710', '-w', '3',\
@@ -83,7 +90,7 @@ if __name__ == '__main__':
         data_processing.ddb_plot(options)
     else:
         print '** For little_r plot: python plot_data.py -l -f all.little_r -p figure_dir -o synop -o metar -v temperature -s 17042823 -e 17050201 -w 1 -m nz4kmN_d2 --id'
-        print '** For ddb plot:      python plot_data.py -b -p figure_dir -o metar -o synop -o ship -o buoy -v dew_point -v temperature -v speed -s 17050609 -e 17050710 -w 3 -m nz4kmN_d2 --id'
+        print '** For ddb plot:      python plot_data.py -b -p figure_dir -z data_dir -o metar -o synop -o ship -o buoy -v dew_point -v temperature -v speed -s 17050609 -e 17050710 -w 3 -m nz4kmN_d2 --id'
     
     print 'done'
 

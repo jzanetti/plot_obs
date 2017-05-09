@@ -55,7 +55,8 @@ def get_ddb_row(client,obs_type,valid_from,valid_to,north,south,west,east):
                 for ckey in ddbrow.keys():
                     if ckey.upper() == ddb_var.upper():
                         ddb_row_out[req_key].append(float(ddbrow[ckey]))
-                
+        
+        ddb_row_out['datetime'].append(str(ddbrow['datetime']))
         ddb_row_out['id'].append(str(ddbrow['obs_id']))                               
         ddb_row_out['latitude'].append(float(ddbrow['latitude']))
         ddb_row_out['longitude'].append(float(ddbrow['longitude']))

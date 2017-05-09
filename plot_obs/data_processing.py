@@ -64,7 +64,8 @@ def little_r_plot(options):
             cdatetime_str1 = (cdatetime + datetime.timedelta(seconds=options.interval*3599)).strftime('%y%m%d%H')
             data, (first_datetime2, last_datetime2) = little_r.extract(options.little_r_file, cdatetime_str,cdatetime_str1, bmap=BASEMAP)
             data = return_req_data(data,c_observation_type)
-            data_plot(BASEMAP,c_observation_type,options,data,cdatetime,cdatetime + datetime.timedelta(seconds=options.interval*3599))
+            if options.do_the_plotting:
+                data_plot(BASEMAP,c_observation_type,options,data,cdatetime,cdatetime + datetime.timedelta(seconds=options.interval*3599))
         cdatetime = cdatetime + datetime.timedelta(seconds=options.interval*3600)
 
 def ddb_plot(options):
@@ -81,8 +82,36 @@ def ddb_plot(options):
             cdatetime_str = cdatetime.strftime('%y%m%d%H')
             cdatetime_str1 = (cdatetime + datetime.timedelta(seconds=options.interval*3599)).strftime('%y%m%d%H')
             data = ddb_process.get_ddb_row(client, [c_observation_type] ,cdatetime_str, cdatetime_str1, params.urcrnrlat, params.llcrnrlat, params.llcrnrlon, params.urcrnrlon)
-            data_plot(BASEMAP,c_observation_type, options,data,cdatetime,cdatetime + datetime.timedelta(seconds=options.interval*3599))
+            write_pickle(data,options)
+            if options.do_the_plotting:
+                data_plot(BASEMAP,c_observation_type, options,data,cdatetime,cdatetime + datetime.timedelta(seconds=options.interval*3599))
         cdatetime = cdatetime + datetime.timedelta(seconds=options.interval*3600)
+
+def write_pickle(data,options):
+    import pickle
+    ddir = options.data_directory
+    
+    if os.path.exists(ddir) == False:
+        os.makedirs(ddir)
+    
+    for var in options.variables:
+        if os.path.exists(ddir + '/' + var + '.p'):
+            open_new = False
+            #print ddir + '/' + var + '.p'
+            sdata = pickle.load(open(ddir + '/' + var + '.p', "rb"))
+        else:
+            open_new = True
+            sdata = []
+        if len(data) > 0:
+            wanted = nonzero(data[var] > little_r.LittleRReport.missing)[0]
+            z = data[var][wanted]
+            for i in range(len(wanted)):
+                label = data['id'][wanted[i]]
+                obs_v = z[i]
+                obs_t = data['datetime'][wanted[i]]
+                if ((label,obs_t,obs_v) in sdata) == False:
+                    sdata.append((label,obs_t,obs_v))
+            pickle.dump(sdata, open(ddir + '/' + var + '.p', "wb"))
 
 def data_plot(BASEMAP,c_observation_type, options,data,first_datetime,last_datetime):
     fignum = 1
