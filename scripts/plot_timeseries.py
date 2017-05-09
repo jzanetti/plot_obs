@@ -73,6 +73,8 @@ def return_data(data_map,start_datetime,end_datetime,observation_type,time_inter
             cdatetime_str = cdatetime.strftime('%y%m%d%H')
             cdatetime_str1 = (cdatetime + datetime.timedelta(seconds=time_interval*3599)).strftime('%y%m%d%H')
             data = ddb_process.get_ddb_row(client, [c_observation_type] ,cdatetime_str, cdatetime_str1, params.urcrnrlat, params.llcrnrlat, params.llcrnrlon, params.urcrnrlon)
+            if len(data) == 0:
+                print '   * no data available'
             write_pickle(data,ddir,var_list)
         cdatetime = cdatetime + datetime.timedelta(seconds=time_interval*3600)
 
