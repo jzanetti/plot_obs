@@ -84,7 +84,7 @@ if __name__ == '__main__':
     station_list = ['93800_synop','93805_synop','93909_synop','93891_synop','93845_synop','93831_synop','93709_synop']
     plot_color = ['k','k.-','k--','r.','g.','b.','m.','y.']
     xtick_interval = 3
-    start_datetime = '20170503010000'
+    start_datetime = '20170508180000'
     end_datetime = '20170509010000'
     time_interval = 1
     pickle_data_dir = '/home/szhang/workspace/plot_little_r_ddb'
@@ -94,6 +94,7 @@ if __name__ == '__main__':
     
     print '2. return required datetime'
     datetime_out_list,datetime_out_list2 = return_timerange(start_datetime,end_datetime,time_interval)
+    xtick_interval = max(1,int(len(datetime_out_list2)/10.0))
     
     
     print '3. sort out data'
@@ -117,6 +118,7 @@ if __name__ == '__main__':
         fdata[station][var]['time'] = ptime      
     
     print '4. plotting'
+    plt.figure(figsize=(20,10))
     for station in station_list:
         plt.plot(fdata[station][var]['value'],plot_color[station_list.index(station)],label=station)
     
@@ -126,6 +128,9 @@ if __name__ == '__main__':
     plt.xticks(range(0,len(datetime_out_list),xtick_interval), datetime_out_list2[0:len(datetime_out_list):xtick_interval], color='k')
     plt.grid()
     plt.title(var + ', ' + start_datetime + '-' + end_datetime)
-    plt.show()
+    plt.savefig(pickle_data_dir + '/' + var + '_timeseris.png', 
+               bbox_inches='tight')
+    plt.close()
+    print 'done'
     
                 
